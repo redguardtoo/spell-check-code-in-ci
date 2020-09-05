@@ -1,0 +1,11 @@
+language: shell
+
+os:
+  - linux
+dist: bionic
+
+before_install:
+  - sudo apt-get -y install emacs25-nox aspell aspell-en
+
+script:
+  - bash <(make test)

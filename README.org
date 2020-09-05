@@ -1,0 +1,68 @@
+* how to spell check code in CI
+
+[[https://travis-ci.org/redguardtoo/spell-check-code-in-ci][https://travis-ci.org/redguardtoo/spell-check-code-in-ci.svg?branch=master]]
+
+Generic and powerful solution to spell check code at Continuous Integration (CI) server
+
+* Problem
+Business analysts and lawyers need spend hours to manually find the typos in application UI before it's released.
+
+A minor typo in web server's configuration file could make it run in non-optimized mode for ages.
+
+So if a machine (CI server) could detect all the typos automatically, time and money is saved.
+
+Existing command line programs like [[http://aspell.net/][aspell]] or [[https://github.com/hunspell/hunspell][hunspell]] are not smart enough to analyze code directly.
+
+For example spell check below C code copied from [[https://github.molgen.mpg.de/git-mirror/linux/blob/3c9688876ace9ca4cd8630e5fbba8bb28235990a/drivers/crypto/mxs-dcp.c#L52][Linux kernel]] using raw aspell without configuration,
+#+begin_src htm
+uint8_t aes_key[2 * AES_KEYSIZE_128];
+#+end_src
+
+I got below result,
+[[file:images/aspell-check-linux-kernel.png]]
+
+Three correct words "uint", "aes", "KEYSIZE" are wrongly identified as typos.
+
+"uint" is part of data type token "unit8_t". "aes" is inside variable name "aes_key". C compiler like GCC will make sure the data type token and variable name token correct.
+
+So the spell checker need be smart enough to understand the code. The spell checker can't treat code as plain text.
+
+User should be able customize spell checker's behavior using her own DSL (Domain Specific Language). For example, user could instruct the spell checker to regard "KEYSIZE" as a valid word.
+
+Then the question is HOW:
+- Who will write the programs to make spell checker "smarter"? Even a simpler web project uses multiple programming languages (SCSS, CSS, HTML, Javascript, Typescript, Java, SQL, Markdown document, Build script, CRM markdown ...). So the resource required to develop the programs from the scratch could be huge.
+- Is the DSL powerful and solid enough?
+- What's the cost to maintain and deploy all these programs and the DSL runtime on CI server?
+* Solution
+The good news is it's 99.9% possible the complete solution is already deployed in your CI server for ages. The solution is actively maintained by the best developers around the world every day.
+
+Yes, I'm talking about Emacs. Everything required for smart spell checking is already built into Emacs.
+** Demo
+- Fork this project
+
+- Everything is already configured. You only need activate CI at [[https://travis-ci.org/]]. The initial build should fail
+
+[[file:images/spell-check-ci-1st-build.png]]
+
+- Fix all the typos reported by log and push the code. The second build should be successful
+
+[[file:images/spell-check-ci-2nd-build.png]]
+
+** Quick Start
+- Make sure Emacs 25+, aspell, aspell English dictionary are installed. On Ubuntu/Debian run =sudo apt install emacs25 aspell aspell-en=
+- Create a simple code file. Code could be Javascript/C/C++/Java/Perl/Python/SQL
+- Run =curl -L https://raw.githubusercontent.com/redguardtoo/wucuo/master/wucuo.el > wucuo.el && emacs -batch -Q -l wucuo.el --eval '(let* ((ispell-program-name "aspell") (ispell-extra-args (wucuo-aspell-cli-args t))) (wucuo-spell-check-file "path-of-your-code-file.ext" t))=
+
+Please note some very old Linux distribution only has Emacs 24. I use [[http://releases.ubuntu.com/18.04/][Ubuntu 18.04.5 LTS (Bionic Beaver)]].
+
+* FAQ
+** Can I use hunspell
+Sure. But aspell has native support for camel case word. If you use hunspell, an slower algorithm written in Emacs Lisp is used to help hunspell.
+** Why use third party package wucuo instead Emacs built in flyspell?
+You can use flyspell directly if you are good at Lisp. IMO, flyspell is more like a collection of powerful APIs plus a simple prototype for spell checking. 
+
+If you know little about Lisp and want a quick and out of box solution, you should use [[https://github.com/redguardtoo/wucuo][wucuo]]. Besides, wucuo is based on flyspell and it does not stop your from hacking flyspell internals.
+** What about multiple dictionaries
+It's a problem of Emacs configuration. Please search [[https://emacs.stackexchange.com/]] for the answers.
+** Can I define a personal plain text dictionary
+It's a problem of aspell/hunspell configuration. See [[https://github.com/redguardtoo/wucuo#create-personal-dictionary-for-aspell-and-hunspell]] for details.
