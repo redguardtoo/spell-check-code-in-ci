@@ -18,4 +18,4 @@ deps:
 	@if [ ! -f deps/wucuo-flyspell-org-verify.el ]; then curl -L https://raw.githubusercontent.com/redguardtoo/wucuo/master/wucuo-flyspell-org-verify.el > deps/wucuo-flyspell-org-verify.el; fi;
 
 test: deps
-	@$(EMACS) -batch -Q -L deps/ -l deps/wucuo.el --eval '(let* ((ispell-program-name "aspell") (ispell-extra-args (wucuo-aspell-cli-args t))) (wucuo-spell-check-file "src/main.js" t))'
+	@$(EMACS) -batch -Q -L deps/ -l deps/wucuo.el --eval '(let* ((ispell-program-name "aspell") (ispell-extra-args (wucuo-aspell-cli-args t))) (wucuo-spell-check-directory "src" t))'
