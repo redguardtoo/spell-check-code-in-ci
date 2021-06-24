@@ -1,6 +1,6 @@
 * how to spell check code in CI
 
-[[https://travis-ci.org/redguardtoo/spell-check-code-in-ci][https://travis-ci.org/redguardtoo/spell-check-code-in-ci.svg?branch=master]]
+[[https://github.com/redguardtoo/spell-check-code-in-ci/actions/workflows/test.yml][https://github.com/redguardtoo/spell-check-code-in-ci/actions/workflows/test.yml/badge.svg]]
 
 Generic and powerful solution to spell check code at Continuous Integration (CI) server
 
@@ -40,7 +40,7 @@ Yes, I'm talking about Emacs. Everything required for smart spell checking is al
 ** Demo
 - Fork this project
 
-- Everything is already configured. You only need activate CI at [[https://travis-ci.org/]]. The initial build should fail
+- Everything is already configured. You only need activate CI. The initial build should fail
 
 [[file:images/spell-check-ci-1st-build.png]]
 
